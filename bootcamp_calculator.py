@@ -1,3 +1,8 @@
+# - 소수점 연산 구현
+#     - 소수점 아래 값 없을 땐 정수만 보이게
+# - %(나머지) 연산 구현
+# - 버튼 테두리두께에 값 줘서 있어보이게 만들기
+# 였습니다!
 from tkinter import *
 from tkinter.filedialog import *
 from tkinter.colorchooser import *
@@ -7,29 +12,45 @@ def on_click(number):
 def on_clear():
     entry.delete(0, END)
 
+
 def create_button(text, row, column, command, width=13, height=9, columnspan=1, rowspan=1, bg=None):
-   button = Button(root, text=text, padx=width, pady=height, command=command, bg= bg)
+   button = Button(root, text=text, padx=width, pady=height, command=command, bg= bg, borderwidth=5)
    button.grid(row=row, column=column, columnspan=columnspan, rowspan=rowspan, sticky='nsew')
 
 def operate(operator):
     global first_num
     global 연산자
     연산자 = operator
-    first_num = int(entry.get())
+    if '.' in entry.get():
+        first_num = float(entry.get())
+    else:
+        first_num = int(entry.get())
     entry.delete(0, END)
 
 def on_equal():
-    second_num = int(entry.get())
+    if '.' in entry.get():
+        second_num = float(entry.get())
+    else:
+        second_num = int(entry.get())
     entry.delete(0, END)
 
     if 연산자 == "+":
-        entry.insert(0, first_num + second_num)
+        result = first_num + second_num
     elif 연산자 == "-":
-        entry.insert(0, first_num - second_num)
+        result = first_num - second_num
     elif 연산자 == "*":
-        entry.insert(0, first_num * second_num)
+        result = first_num * second_num
     elif 연산자 == "/":
-        entry.insert(0, first_num / second_num)
+        result = first_num / second_num
+    elif 연산자 == "%":
+        result = first_num % second_num
+
+    # 연산 결과가 정수인 경우 정수로, 아니면 소수로 표시
+    if result.is_integer():
+        entry.insert(0, int(result))
+    else:
+        entry.insert(0, result)
+
 
 # 윈도우 생성
 root = Tk()
@@ -52,7 +73,7 @@ for number in range(9):
 create_button("0", 5, 0, lambda: on_click(0), columnspan=2 )#bg='gainsboro')
 create_button("c", 1, 0, on_clear )#bg='gray70')
 
-create_button("%", 1, 2, None, bg='gray70')
+create_button("%", 1, 2, lambda: operate("%"), bg='gray70')
 create_button("/", 1, 3, lambda: operate("/"), bg='gray70')
 create_button("*", 2, 3, lambda: operate("*"), bg='gray70')
 create_button("-", 3, 3, lambda: operate("-"), bg='gray70')
